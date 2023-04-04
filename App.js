@@ -2,6 +2,8 @@ import React from 'react';
 import './firebase';
 import RootNavigation from './navigation';
 import { ThemeProvider, Button, createTheme } from '@rneui/themed';
+import 'react-native-gesture-handler';
+
 
 const theme = createTheme({
   components: {
