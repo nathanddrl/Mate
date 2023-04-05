@@ -139,7 +139,6 @@ export default function HomeScreen() {
                   newActivities.push({ id: doc.id, ...doc.data() });
                 });
                 setActivities(newActivities);
-                console.log("activities", activities);
                 navigation.navigate("Home");
               }
             };
