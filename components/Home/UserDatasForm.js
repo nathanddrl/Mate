@@ -8,7 +8,7 @@ import { StyleSheet } from "react-native";
 import { getDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 
-export default function UserDatasForm() {
+export default function UserDatasForm ( props ) {
   const navigation = useNavigation();
   const [isNewUser, setIsNewUser] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -29,6 +29,10 @@ export default function UserDatasForm() {
       await saveUserData(user.uid, {
         firstName,
         lastName,
+        age,        
+        gender,
+        dateOfBirth,
+        dateOfInscription: new Date(),
         email: user.email,
         isNewUser: false,
       });
@@ -38,7 +42,7 @@ export default function UserDatasForm() {
       if (typeof props.onUserDataSaved === 'function') {
         props.onUserDataSaved();
       }
-      
+
       //go to main screen
       navigation.navigate("Home");
     }

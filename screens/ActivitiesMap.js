@@ -53,6 +53,8 @@ export default function ActivitiesMap() {
         }}
       >
         {activities.map((activity) => (
+          activity.activityLocation ? (
+
           <Marker
             key={activity.id}
             coordinate={{
@@ -63,6 +65,7 @@ export default function ActivitiesMap() {
               navigation.navigate("ActivityDetails", { activity });
             }}
           />
+          ) : null
         ))}
       </MapView>
       <TouchableOpacity

@@ -7,6 +7,8 @@ import { getAuth } from "firebase/auth";
 import { useState, useEffect, useLayoutEffect } from "react";
 import { TextInput } from "react-native";
 import UserDatasForm from "../components/Home/UserDatasForm";
+import { useIsFocused } from "@react-navigation/native";
+
 import {
   getFirestore,
   doc,
@@ -29,15 +31,43 @@ export default function HomeScreen() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [activities, setActivities] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   const db = getFirestore();
   const auth = getAuth();
 
-
   function handleUserDataSaved() {
-    // Do something here to trigger a re-render of the comp
     setIsNewUser(false);
   }
+
+  function refreshPage() {
+    setRefresh(!refresh);
+    setRefresh(!refresh);
+  }
+
+  const isFocused = useIsFocused();
+
+  const fetchActivities = async () => {
+    if (user) {
+      // retrieve all activities
+      const activitiesRef = collection(db, "activities");
+      const querySnapshot = await getDocs(activitiesRef);
+      const activities = [];
+
+      querySnapshot.forEach((doc) => {
+        activities.push({ id: doc.id, ...doc.data() });
+      });
+
+      setActivities(activities);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+
+      fetchActivities();
+    }
+  }, [isFocused]);
 
   // set first name and last name if user is not new
   useEffect(() => {
@@ -58,21 +88,7 @@ export default function HomeScreen() {
 
   //get all activities
   useEffect(() => {
-    const fetchActivities = async () => {
-      if (user) {
-        // retrieve all activities
-        const activitiesRef = collection(db, "activities");
-        const querySnapshot = await getDocs(activitiesRef);
-        const activities = [];
-
-        querySnapshot.forEach((doc) => {
-          activities.push({ id: doc.id, ...doc.data() });
-        });
-
-        setActivities(activities);
-      }
-    };
-
+    
     fetchActivities();
   }, [user]);
 
@@ -111,8 +127,6 @@ export default function HomeScreen() {
   const HeaderRight = () => {
     const navigation = useNavigation();
 
-   
-
     const handleIconPress = () => {
       navigation.navigate("ActivitiesMap");
     };
@@ -134,12 +148,14 @@ export default function HomeScreen() {
                 const activitiesRef = collection(db, "activities");
                 const querySnapshot = await getDocs(activitiesRef);
                 const newActivities = [];
-                
+
                 querySnapshot.forEach((doc) => {
                   newActivities.push({ id: doc.id, ...doc.data() });
                 });
                 setActivities(newActivities);
                 navigation.navigate("Home");
+                refreshPage();
+                console.log("refreshed");
               }
             };
 
@@ -230,6 +246,7 @@ export default function HomeScreen() {
               Voici les activités disponibles
             </Text>
             {activities.length > 0 ? (
+              <View style={styles.scrollContainer}>
               <ScrollView contentContainerStyle={styles.scrollView}>
                 {activities.map((activity) => {
                   const date = activity.activityDate
@@ -260,6 +277,7 @@ export default function HomeScreen() {
                   );
                 })}
               </ScrollView>
+              </View>
             ) : (
               <Text style={{ color: "#fff", fontSize: 20, marginTop: 20 }}>
                 Aucune activité disponible
@@ -325,14 +343,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 5,
   },
-  scrollView: {
+  scrollContainer: {
     alignItems: "center",
     justifyContent: "flex-start",
-    marginVertical: 20,
+    marginTop: -20,
     paddingVertical: 20,
     backgroundColor: "#fff",
-    height: "100%",
+    height: "90%",
     borderRadius: 45,
+    width: "100%",
+    // déplacement vers le bas 
+    transform: [{ translateY: 50 }],
+  },
+  scrollView: {
+    paddingBottom: 150,
   },
   buttonContainer: {
     display: "flex",
