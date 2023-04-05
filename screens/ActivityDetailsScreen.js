@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Card, ListItem, Button, Icon } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import {
@@ -12,7 +12,6 @@ import {
 import { useAuthentication } from "../utils/hooks/useAuthentication";
 import { useNavigation } from "@react-navigation/native";
 import MapView, { Marker } from "react-native-maps";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const ActivityDetailsScreen = ({ route }) => {
@@ -41,7 +40,7 @@ const ActivityDetailsScreen = ({ route }) => {
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          navigation.goBack();
+          navigation.navigate("Home");
         }}
       >
         <MaterialCommunityIcons
