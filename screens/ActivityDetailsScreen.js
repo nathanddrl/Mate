@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { Card, ListItem, Button, Icon } from "react-native-elements";
 import { ScrollView } from "react-native-gesture-handler";
 import {
   getFirestore,
   collection,
-  getDocs,
+  getDoc,
   doc,
-  deleteDoc 
+  deleteDoc,
 } from "firebase/firestore";
 import { useAuthentication } from "../utils/hooks/useAuthentication";
 import { useNavigation } from "@react-navigation/native";
@@ -18,20 +18,44 @@ const ActivityDetailsScreen = ({ route }) => {
   const { activity } = route.params;
   const date = activity.activityDate.toDate().toLocaleDateString();
 
+  const [creator, setCreator] = useState(null);
+
   const { user } = useAuthentication();
   const db = getFirestore();
   const navigation = useNavigation();
 
+  useEffect(() => {
+    // get user info
+    const fetchUser = async () => {
+      if (user) {
+        const userRef = doc(db, "users", activity.activityCreator);
+        const docSnap = await getDoc(userRef);
+
+        if (docSnap.exists()) {
+          setCreator(docSnap.data());
+        } else {
+          console.log("No such document!");
+        }
+      }
+    };
+
+    fetchUser();
+  }, [user]);
+
+
+
   async function deleteActivity(activityId) {
     const db = getFirestore();
-  
-    try {
-      // Remplacez 'activities' par le nom de votre collection d'activités dans Firestore
-      await deleteDoc(doc(db, 'activities', activityId));
-      console.log('Activité supprimée avec succès');
-      navigation.goBack();
-    } catch (error) {
-      console.error('Erreur lors de la suppression de l\'activité:', error);
+    //only if the user is the creator of the activity
+    if (user.uid == activity.activityCreator) {
+      try {
+        // Remplacez 'activities' par le nom de votre collection d'activités dans Firestore
+        await deleteDoc(doc(db, "activities", activityId));
+        console.log("Activité supprimée avec succès");
+        navigation.goBack();
+      } catch (error) {
+        console.error("Erreur lors de la suppression de l'activité:", error);
+      }
     }
   }
 
@@ -58,12 +82,23 @@ const ActivityDetailsScreen = ({ route }) => {
           Description: {activity.activityDescription}
         </Text>
         <Text style={styles.activityText}>Date: {date}</Text>
-        <Button
-          title="Supprimer l'activité"
-          onPress={() => {
-            deleteActivity(activity.id);
-          }}
-        />
+        <Text style={styles.activityText}>Créateur : {creator?.firstName} {creator?.lastName}</Text>
+       
+      
+        {user && (
+      
+      user && user.uid == activity.activityCreator && (
+        
+          <Button
+            title="Supprimer l'activité"
+            onPress={() => {
+              deleteActivity(activity.id);
+            }}
+          />
+      )
+        )}
+      
+      
       </Card>
       {activity.activityLocation ? (
         <MapView
