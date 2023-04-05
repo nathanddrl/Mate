@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  Button,
-} from "react-native";
+import { View, Text, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { useAuthentication } from "../utils/hooks/useAuthentication";
 import {
   getFirestore,
@@ -17,12 +10,11 @@ import {
 } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import { TextInput } from "react-native";
-import { getDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import MapView, { Marker } from "react-native-maps";
-import RNPickerSelect from "react-native-picker-select";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 
 export default function CreateActivity() {
   const { user } = useAuthentication();
@@ -31,7 +23,7 @@ export default function CreateActivity() {
 
   const [activityName, setActivityName] = useState("");
   const [activityDescription, setActivityDescription] = useState("");
-  const [activityDate, setActivityDate] = useState(new Date(1598051730000));
+  const [activityDate, setActivityDate] = useState(new Date());
   const [activityLocation, setActivityLocation] = useState("");
   const [activityParticipants, setActivityParticipants] = useState("");
   const [activityType, setActivityType] = useState("");
@@ -117,7 +109,6 @@ export default function CreateActivity() {
       />
       {/* date selector for the date */}
       <View style={styles.customBtnContainer}>
-        
         <TouchableOpacity onPress={showDatepicker} style={styles.customBtn}>
           <MaterialCommunityIcons name="calendar" size={30} color="white" />
         </TouchableOpacity>
@@ -131,11 +122,15 @@ export default function CreateActivity() {
         </TouchableOpacity>
       </View>
 
-      <Text style={{ 
-        fontSize: 16,
-        color: "darkgrey",
-        marginBottom: 20,
-       }}>Date de l'activité : {activityDate.toLocaleString()}</Text>
+      <Text
+        style={{
+          fontSize: 16,
+          color: "darkgrey",
+          marginBottom: 20,
+        }}
+      >
+        Date de l'activité : {activityDate.toLocaleString()}
+      </Text>
       {show && (
         <DateTimePicker
           testID="dateTimePicker"
@@ -145,12 +140,18 @@ export default function CreateActivity() {
           onChange={onChange}
         />
       )}
-      
+
       <TouchableOpacity
-        onPress={() => { setModalVisible(true) }}
+        onPress={() => {
+          setModalVisible(true);
+        }}
         style={styles.customBtn}
       >
-        <MaterialCommunityIcons name="map-marker-plus-outline" size={30} color="white" />
+        <MaterialCommunityIcons
+          name="map-marker-plus-outline"
+          size={30}
+          color="white"
+        />
       </TouchableOpacity>
 
       <Modal
@@ -190,11 +191,13 @@ export default function CreateActivity() {
           </TouchableOpacity>
         </View>
       </Modal>
-      <Text style={{ 
-        fontSize: 16,
-        color: "darkgrey",
-        marginBottom: 20,
-       }}>
+      <Text
+        style={{
+          fontSize: 16,
+          color: "darkgrey",
+          marginBottom: 20,
+        }}
+      >
         {selectedLocation
           ? "Localisation sélectionnée"
           : "Aucune localisation sélectionnée"}
@@ -205,29 +208,40 @@ export default function CreateActivity() {
         onChangeText={(text) => setActivityParticipants(text)}
         value={activityParticipants}
       />
-      <RNPickerSelect
-        onValueChange={(value) => console.log(value)}
-        items={[
-          { label: "Football", value: "Football" },
-          { label: "Baseball", value: "Baseball" },
-          { label: "Hockey", value: "Hockey" },
-        ]}
+      <Picker
+        selectedValue={activityType}
+        onValueChange={(itemValue, itemIndex) => setActivityType(itemValue)}
         style={{ 
-
+          height: 50,
+          width: 150,
+          marginBottom: 20,
+          backgroundColor: "white",
+          borderRadius: 10,
+          borderWidth: 1,
+          borderColor: "lightgrey",
          }}
-        prompt="Choisissez un sport"
-      />
+      >
+        <Picker.Item label="Sélectionner un sport" value="" />
+        <Picker.Item label="Basket" value="basket" />
+        <Picker.Item label="Football" value="football" />
+        <Picker.Item label="Tennis" value="tennis" />
+        <Picker.Item label="Volley" value="volley" />
+        <Picker.Item label="Badminton" value="badminton" />
+      </Picker>
       <TouchableOpacity
         onPress={() => handleFormSubmit()}
         style={styles.validateBtn}
       >
-        <Text style={{ 
-          fontSize: 16,
-          color: "white",
-          textAlign: "center",
-         }}>Créer l'activité</Text>
+        <Text
+          style={{
+            fontSize: 16,
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          Créer l'activité
+        </Text>
       </TouchableOpacity>
-
     </View>
   );
 }

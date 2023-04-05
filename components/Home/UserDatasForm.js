@@ -35,6 +35,10 @@ export default function UserDatasForm() {
 
       setIsNewUser(false);
 
+      if (typeof props.onUserDataSaved === 'function') {
+        props.onUserDataSaved();
+      }
+      
       //go to main screen
       navigation.navigate("Home");
     }

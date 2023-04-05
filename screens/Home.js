@@ -33,6 +33,12 @@ export default function HomeScreen() {
   const db = getFirestore();
   const auth = getAuth();
 
+
+  function handleUserDataSaved() {
+    // Do something here to trigger a re-render of the comp
+    setIsNewUser(false);
+  }
+
   // set first name and last name if user is not new
   useEffect(() => {
     const fetchUserData = async () => {
@@ -50,21 +56,7 @@ export default function HomeScreen() {
     fetchUserData();
   }, [user]);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        const userRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userRef);
-
-        if (userDoc.exists()) {
-          setFirstName(userDoc.data().firstName);
-        }
-      }
-    };
-
-    fetchUserData();
-  }, [user]);
-
+  //get all activities
   useEffect(() => {
     const fetchActivities = async () => {
       if (user) {
@@ -119,20 +111,7 @@ export default function HomeScreen() {
   const HeaderRight = () => {
     const navigation = useNavigation();
 
-    const fetchActivities = async () => {
-      if (user) {
-        // retrieve all activities
-        const activitiesRef = collection(db, "activities");
-        const querySnapshot = await getDocs(activitiesRef);
-        const newActivities = [];
-
-        querySnapshot.forEach((doc) => {
-          newActivities.push({ id: doc.id, ...doc.data() });
-        });
-        setActivities(newActivities);
-        navigation.navigate("Home");
-      }
-    };
+   
 
     const handleIconPress = () => {
       navigation.navigate("ActivitiesMap");
@@ -149,6 +128,22 @@ export default function HomeScreen() {
       >
         <TouchableOpacity
           onPress={() => {
+            const fetchActivities = async () => {
+              if (user) {
+                // retrieve all activities
+                const activitiesRef = collection(db, "activities");
+                const querySnapshot = await getDocs(activitiesRef);
+                const newActivities = [];
+                
+                querySnapshot.forEach((doc) => {
+                  newActivities.push({ id: doc.id, ...doc.data() });
+                });
+                setActivities(newActivities);
+                console.log("activities", activities);
+                navigation.navigate("Home");
+              }
+            };
+
             fetchActivities();
           }}
           style={{ marginRight: 10 }}
@@ -211,7 +206,7 @@ export default function HomeScreen() {
           }}
         >
           <Button title="Logout" onPress={handleLogout} />
-          <UserDatasForm />
+          <UserDatasForm onUserDataSaved={handleUserDataSaved} />
         </View>
       ) : (
         <View style={styles.container}>
