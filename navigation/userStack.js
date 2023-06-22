@@ -10,6 +10,7 @@ import MainScreen from "../screens/MainScreen";
 import CreateActivity from "../screens/CreateActivity";
 import ActivityDetailsScreen from "../screens/ActivityDetailsScreen";
 import ActivitiesMap from "../screens/ActivitiesMap";
+import JoinRequestsScreen from "../screens/JoinRequestsScreen";
 
 const Stack = createStackNavigator();
 
@@ -63,6 +64,14 @@ export default function UserStack() {
             headerShown: false,
           }}
           screenOptions={{ HeaderShown: false }}
+        />          
+        <Stack.Screen
+          name="JoinRequests"
+          component={JoinRequestsScreen}
+          options={{ 
+            title: "",
+            headerShown: false,
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

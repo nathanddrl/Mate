@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ImageBackground } from "react-native";
 import { useAuthentication } from "../utils/hooks/useAuthentication";
 import { Button } from "react-native-elements";
 import { signOut } from "firebase/auth";
@@ -36,6 +36,8 @@ export default function HomeScreen() {
   const db = getFirestore();
   const auth = getAuth();
 
+  const image = require("../assets/backgroundTile.png");
+
   function handleUserDataSaved() {
     setIsNewUser(false);
   }
@@ -46,6 +48,24 @@ export default function HomeScreen() {
   }
 
   const isFocused = useIsFocused();
+
+    // set isNewUser state by checking if user is new
+    useEffect(() => {
+      const fetchUserData = async () => {
+        if (user) {
+          const userRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userRef);
+  
+          if (userDoc.exists()) {
+            setIsNewUser(userDoc.data().isNewUser);
+          } else {
+            setIsNewUser(true);
+          }
+        }
+      };
+  
+      fetchUserData();
+    }, [user]);
 
   const fetchActivities = async () => {
     if (user) {
@@ -92,23 +112,7 @@ export default function HomeScreen() {
     fetchActivities();
   }, [user]);
 
-  // set isNewUser state by checking if user is new
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        const userRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userRef);
 
-        if (userDoc.exists()) {
-          setIsNewUser(userDoc.data().isNewUser);
-        } else {
-          setIsNewUser(true);
-        }
-      }
-    };
-
-    fetchUserData();
-  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -323,17 +327,23 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 10,
   },
-  activityContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+  imagebgs: {
+    borderRadius: 45,
     width: "100%",
-    display: "flex",
-    flexDirection: "row",
+    height: "100%",
+    // déplacement vers le bas 
+    transform: [{ translateY: 50 }],
+    opacity: 0.4,
+    borderRadius: 45,
+    width: "100%",
+    height: "100%",
+    transform: [{ translateY: 50 }],
   },
   activityCard: {
     borderRadius: 10,
     marginBottom: 10,
     width: "90%",
+    opacity: 1,
   },
   activityTitle: {
     fontSize: 18,
@@ -346,14 +356,14 @@ const styles = StyleSheet.create({
   scrollContainer: {
     alignItems: "center",
     justifyContent: "flex-start",
-    marginTop: -20,
-    paddingVertical: 20,
     backgroundColor: "#fff",
     height: "90%",
     borderRadius: 45,
     width: "100%",
     // déplacement vers le bas 
     transform: [{ translateY: 50 }],
+    overflow: "hidden",  // add this
+
   },
   scrollView: {
     paddingBottom: 150,
@@ -386,5 +396,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingTop: 10,
     backgroundColor: "#006bbc",
+  },
+  activityContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    opacity: 1,
+    
   },
 });

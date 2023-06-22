@@ -41,6 +41,16 @@ const SignInScreen = () => {
       })
     }
   }
+  async function signInTest2() {
+    try {
+      await signInWithEmailAndPassword(auth, "test2@mail.fr", "Test1234");
+    } catch (error) {
+      setValue({
+        ...value,
+        error: error.message,
+      })
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -67,7 +77,6 @@ const SignInScreen = () => {
         <Button title="Sign in" buttonStyle={styles.control} onPress={signIn} />
       </View>
 
-      <Button title="admin" buttonStyle={styles.control} onPress={signInTest} />
     </View>
   );
 }

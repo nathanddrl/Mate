@@ -51,6 +51,8 @@ export default function CreateActivity() {
           activityParticipants,
           activityType,
           activityCreator: user.uid,
+          joinRequests: [],
+          confirmedParticipants: [],
         });
         navigation.navigate("Home");
       } catch (error) {
